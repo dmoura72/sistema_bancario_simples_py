@@ -5,9 +5,9 @@ def menu():
     [d]\tDepositar
     [s]\tSacar
     [e]\tExtrato
-    [nc]\tSair
-    [lc]\tNova conta
-    [nu]\tLista contas
+    [nu]\tNova usuário
+    [nc]\tNovo conta
+    [lc]\tLista contas
     [q]\tSair
     => """
     
@@ -62,6 +62,62 @@ def exibir_extrato(saldo, /, *, extrato):
     print("==========================================")
 
 
+def novo_usuario(usuarios):
+     
+     cpf = input(("Digite o CPF (Somente números): "))
+
+     usuario_existente = next((usuario for usuario in usuarios if usuario["cpf"] == cpf), None)
+
+     if usuario_existente:
+        print("CPF já existe!")
+        return
+     
+     nome = input("Informe o nome completo: ")
+     data_nascimento = input("Informe a data de nascimento (DD/MM/AAAA): ")
+     endereco = input("Informe o endereço (logradouro, número - bairro - cidade/estado): ")
+    
+     usuarios.append({
+        "cpf": cpf,
+        "nome": nome,
+        "endereço": endereco,
+        "data_nascimento": data_nascimento
+     })
+
+     print("Usuário criado com sucesso!")
+
+
+def nova_conta(usuarios, contas, agencia = "0001"):
+     
+     cpf = input(("Digite o CPF (Somente números): "))
+
+     usuario_existente = next((usuario for usuario in usuarios if usuario["cpf"] == cpf), None)
+
+     if not usuario_existente:
+        print("Usuário não encontrado! Realize o cadastro antes. ")
+        return
+     
+     numero_conta = len(contas) + 1
+    
+     usuarios.append({
+        "Agencia": agencia,
+        "numero_conta": numero_conta,
+        "cpf": cpf
+     })
+
+     print(f"Conta criada com sucesso! Agência: {agencia} Conta: {numero_conta}")
+     
+
+def listar_contas(contas):
+    print("\n======= LISTA DE CONTAS =======")
+    if not contas:
+        print("Nenhuma conta cadastrada.")
+        return
+    
+    for conta in contas:
+        print(f"Agência: {conta['agencia']} | Conta: {conta['numero_conta']} | CPF: {conta['cpf']}")
+    print("===============================")
+
+
 def main():
     LIMITE_SAQUES = 3
     AGENCIA = "0001"
@@ -70,7 +126,7 @@ def main():
     limite = 500
     extrato = ""
     numero_saques = 0
-    usuario = []
+    usuarios = []
     contas = []
     
     while True:
@@ -95,8 +151,17 @@ def main():
         elif opcao == "e":
              exibir_extrato(saldo, extrato = extrato)
 
+        elif opcao == "nu":
+            novo_usuario(usuarios)
+        elif opcao == "nc":
+            nova_conta(usuarios, contas)
+        elif opcao == "lc":
+            listar_contas(contas)
+        elif opcao == "q":
+            print("Saindo do sistema. Até mais!")
+            break
         else:
-             print("Operação inválida, por favor selecione novamente a operação desejada.")
+            print("Opção inválida, tente novamente.")
 
 
 main()
